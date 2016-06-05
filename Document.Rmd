@@ -1,0 +1,190 @@
+---
+title: "Bootstrap"
+author: "Jose Quinonez"
+date: "4 de junio de 2016"
+output: html_document
+---
+ 
+# Week 4 Homework
+#### Write bootstrap code to illustrate the central limit theorem in R markdown and push the result to GitHub. Use a normal distribution with two different sample sizes and an exponential distribution with two different sample sizes. Correct code alone is insufficient. Please also comment on the code and explain the results. For help, see the lotsa.medians function in unit 2. The deliverable is a link to a GitHub repo containing the code.
+
+```{r, include=FALSE}
+## Declare global variables
+knitr::opts_chunk$set(echo = FALSE)
+## knitr::opts_chunk$set(cache=TRUE) ## comment this line to refresh every data in each project run and avoid cache data 
+```
+
+```{r}
+## bootstrap_fun is a function that will create a loop to get 1,000 samples from the input vector and return a vector with the 1,000 means of those samples
+bootstrap_fun  <- function (arg_vector) {
+  NumLoops <- 1000
+  bootstrap <- numeric(NumLoops)
+  for (i in 1:NumLoops) {
+    bootsample <- sample(arg_vector, size=length(arg_vector), replace=TRUE) ## sample vector with replacement
+    bootstrap[i] <- mean(bootsample)
+  }
+  bootstrap
+}
+```
+
+```{r}
+## Use these default values to rnorm()
+ProposedMean <- 100
+ProposedSD <- 15
+```
+
+```{r}
+## Sample sizes to generate: 2 normal distribution generated vector (1 & 2), and 2 exponential distribution generated vector (3 & 4)
+SampleSize1 <- 100
+SampleSize2 <- 200
+SampleSize3 <- 10
+SampleSize4 <- 20
+```
+
+```{r}
+## Generate 2 normal distributed vectors
+VectorX1 <- rnorm(SampleSize1, ProposedMean, ProposedSD)
+VectorX2 <- rnorm(SampleSize2, ProposedMean, ProposedSD)
+
+## Generate 2 exponential distributed vectors
+VectorX3 <- rexp(n=SampleSize3, rate=1)
+VectorX4 <- rexp(n=SampleSize4, rate=1)
+
+## Save the vectors' means
+OriginalMean1 <- mean(VectorX1)
+OriginalMean2 <- mean(VectorX2)
+OriginalMean3 <- mean(VectorX3)
+OriginalMean4 <- mean(VectorX4)
+
+## Save the vectors' sd's
+OriginalSD1 <- sd(VectorX1)
+OriginalSD2 <- sd(VectorX2)
+OriginalSD3 <- sd(VectorX3)
+OriginalSD4 <- sd(VectorX4)
+
+## Generate the bootstraps
+vbootstrap1 <- bootstrap_fun(VectorX1) ## Call bootstrap function with the first vector from a normal distributed 
+vbootstrap2 <- bootstrap_fun(VectorX2) ## Call bootstrap function with the second vector from a normal distributed 
+vbootstrap3 <- bootstrap_fun(VectorX3) ## Call bootstrap function with the first vector from an exponential distributed
+vbootstrap4 <- bootstrap_fun(VectorX4) ## Call bootstrap function with the second vector from an exponential distributed
+```
+
+```{r}
+## Generate histogram for bootstrap 1 (normal distribution vector 1), and calculate  mean and sd
+hist(vbootstrap1, main = "Histogram of Bootstrap 1 - Normal 1", xlab="Bootstrap 1 Normal")
+vbootstrap_mean1 <- mean(vbootstrap1)
+vbootstrap_SD1 <- sd(vbootstrap1)
+
+## Ilustrate the proposed mean, the mean from the original normal distributed vector, and the bootstrap mean
+abline(v=ProposedMean, col="red", lwd=3, lty=1)
+abline(v=OriginalMean1, col="brown", lwd=2, lty=2)
+abline(v=vbootstrap_mean1, col="cyan", lwd=2, lty=3)
+
+## Calculate the bias comparing the original normal distributed vector mean minus the the bootstrap mean 
+Final_SD1 <- OriginalSD1/sqrt(SampleSize1)
+est_bias1 <- OriginalMean1-vbootstrap_mean1
+```
+
+### Results from Bootstrap 1 - Normal 1
+```{r}
+## Display results
+paste ("Standard deviation from Bootstrap: ", round(vbootstrap_SD1,4))
+paste ("Final Standard devation: ", round(Final_SD1,4))
+paste ("Bias from Original mean (", round(OriginalMean1,4), " in brown) minus bootstrap mean (", round(vbootstrap_mean1,4), " in cyan) : ", round(est_bias1,4))
+```
+
+```{r}
+## Generate histogram for bootstrap 2 (normal distribution vector 2), and calculate  mean and sd
+hist(vbootstrap2, main = "Histogram of Bootstrap 2 - Normal 2", xlab="Bootstrap 2 Normal")
+vbootstrap_mean2 <- mean(vbootstrap2)
+vbootstrap_SD2 <- sd(vbootstrap2)
+
+## Ilustrate the proposed mean, the mean from the original normal distributed vector, and the bootstrap mean
+abline(v=ProposedMean, col="red", lwd=3, lty=1)
+abline(v=OriginalMean2, col="brown", lwd=2, lty=2)
+abline(v=vbootstrap_mean2, col="cyan", lwd=2, lty=3)
+
+## Calculate the bias comparing the original normal distributed vector mean minus the the bootstrap mean 
+Final_SD2 <- OriginalSD2/sqrt(SampleSize2)
+est_bias2 <- OriginalMean2-vbootstrap_mean2
+```
+
+### Results from Bootstrap 2 - Normal 2
+```{r}
+## Display results
+paste ("Standard deviation from Bootstrap: ", round(vbootstrap_SD2,4))
+paste ("Final Standard devation: ", round(Final_SD2,4))
+paste ("Bias from Original mean (", round(OriginalMean2,4), " in brown) minus bootstrap mean (", round(vbootstrap_mean2,4), " in cyan) : ", round(est_bias2,4))
+```
+
+```{r}
+## Generate histogram for bootstrap 3 (exponential distribution vector 1), and calculate  mean and sd
+hist(vbootstrap3, main = "Histogram of Bootstrap 3 - Exponential 1", xlab="Bootstrap 3 Exp")
+vbootstrap_mean3 <- mean(vbootstrap3)
+vbootstrap_SD3 <- sd(vbootstrap3)
+
+## Ilustrate the proposed mean, the mean from the original normal distributed vector, and the bootstrap mean
+abline(v=ProposedMean, col="red", lwd=3, lty=1)
+abline(v=OriginalMean3, col="brown", lwd=2, lty=2)
+abline(v=vbootstrap_mean3, col="cyan", lwd=2, lty=3)
+
+## Calculate the bias comparing the original normal distributed vector mean minus the the bootstrap mean 
+Final_SD3 <- OriginalSD3/sqrt(SampleSize3)
+est_bias3 <- OriginalMean3-vbootstrap_mean3
+```
+
+### Results from Bootstrap 3 - Exponential 1
+```{r}
+## Display results
+paste ("Standard deviation from Bootstrap: ", round(vbootstrap_SD3,4))
+paste ("Final Standard devation: ", round(Final_SD3,4))
+paste ("Bias from Original mean (", round(OriginalMean3,4), " in brown) minus bootstrap mean (", round(vbootstrap_mean3,4), " in cyan) : ", round(est_bias3,4))
+```
+
+```{r}
+paste ("VectorX3 is an exponential distribution vector, but the bootstrap calculated from it create a normal distribution")
+hist(VectorX3, main="Exponential distribution VectorX3")
+abline(v=OriginalMean3, col="brown", lwd=2, lty=2)
+paste ("The reason why the scale is different between the 2 histograms, is because the original vector was generated with a sample size of ", round(SampleSize3,0), ", and bootstrap was calculated with ", round(length(vbootstrap3),0))
+```
+
+```{r}
+## Generate histogram for bootstrap 4 (exponential distribution vector 2), and calculate  mean and sd
+hist(vbootstrap4, main = "Histogram of Bootstrap 4 - Exponential 2", xlab="Bootstrap 4 Exp")
+vbootstrap_mean4 <- mean(vbootstrap4)
+vbootstrap_SD4 <- sd(vbootstrap4)
+
+## Ilustrate the proposed mean, the mean from the original normal distributed vector, and the bootstrap mean
+abline(v=ProposedMean, col="red", lwd=3, lty=1)
+abline(v=OriginalMean4, col="brown", lwd=2, lty=2)
+abline(v=vbootstrap_mean4, col="cyan", lwd=2, lty=3)
+
+## Calculate the bias comparing the original normal distributed vector mean minus the the bootstrap mean 
+Final_SD4 <- OriginalSD3/sqrt(SampleSize4)
+est_bias4 <- OriginalMean3-vbootstrap_mean4
+```
+
+### Results from Bootstrap 4 - Exponential 2
+``` {r}
+## Display results
+paste ("Standard deviation from Bootstrap: ", round(vbootstrap_SD4,4))
+paste ("Final Standard devation: ", round(Final_SD4,4))
+paste ("Bias from Original mean (", round(OriginalMean4,4), " in brown) minus bootstrap mean (", round(vbootstrap_mean4,4), " in cyan) : ", round(est_bias4,4))
+```
+
+```{r}
+paste ("VectorX4 is an exponential distribution vector, but the bootstrap calculated from it create a normal distribution")
+hist(VectorX4, main="Exponential distribution VectorX4")
+abline(v=OriginalMean4, col="brown", lwd=2, lty=2)
+paste ("The reason why the scale is different between the 2 histograms, is because the original vector was generated with a sample size of ", round(SampleSize4,0), ", and bootstrap was calculated with ", round(length(vbootstrap4),0))
+```
+
+# Conclusions
+
+### A big number (1,000) of iterations (bootstraps) from a generated sample, created a normal distribution, regardless of the original distribution (normal or exponential) of the sample. This demonstrates the central limit theorem.
+
+
+
+
+
+
